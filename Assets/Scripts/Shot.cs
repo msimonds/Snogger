@@ -8,8 +8,9 @@ public class Shot : MonoBehaviour {
     Rigidbody2D body;
     BoxCollider2D coll;
     Vector2 velocity;
-	// Use this for initialization
-	void Start () {
+    SpriteRenderer render;
+    // Use this for initialization
+    void Start () {
 	
 	}
 
@@ -22,9 +23,12 @@ public class Shot : MonoBehaviour {
         this.transform.position = s.transform.position;
        
         //this.gameObject.AddComponent<MeshRenderer>();
-        SpriteRenderer render = this.gameObject.AddComponent<SpriteRenderer>();
-        Sprite[] spritez = Resources.LoadAll<Sprite>("Sprites/Breakwall");
-        render.sprite = spritez[0];
+        render = this.gameObject.AddComponent<SpriteRenderer>();
+        //Sprite[] spritez = Resources.LoadAll<Sprite>("Sprites/shot (1)");
+        
+        render.sprite = Resources.Load<Sprite>("Sprites/shot");
+        transform.localScale= Vector3.Scale(transform.localScale,new Vector3(1.6f, 1.6f, 1));
+        render.sortingLayerName = "Foreground";
         this.velocity = velocity;
        // this.body = gameObject.AddComponent<Rigidbody2D>();
        // this.body.gravityScale = 0;
@@ -34,16 +38,18 @@ public class Shot : MonoBehaviour {
         
         
     }
-
     void OnBecameInvisible()
     {
+        
         Destroy(gameObject);
     }
+
 
     // Update is called once per frame
     void Update () {
 
         transform.position += (Vector3)velocity * Time.deltaTime;
+       
         
 
 

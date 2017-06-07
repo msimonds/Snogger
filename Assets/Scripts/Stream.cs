@@ -24,8 +24,18 @@ public class Stream : MonoBehaviour {
         this.speed = speed;
         this.transform.position = pos;
         SpriteRenderer render = this.gameObject.AddComponent<SpriteRenderer>();
-        Sprite[] spritez = Resources.LoadAll<Sprite>("Sprites/Wheel1");
-        render.sprite = spritez[0];
+        string spriteName = "";
+        if (dir == Vector2.left)
+        {
+            spriteName = "Sprites/boy1";
+        } else if (dir == Vector2.right)
+        {
+            spriteName = "Sprites/boy2";
+        }
+     
+        render.sprite = Resources.Load<Sprite>(spriteName);
+        transform.localScale = Vector3.Scale(transform.localScale, new Vector3(1.6f, 1.6f, 1));
+        render.sortingLayerName = "Midground";
         //0 1 2 for small, med, large sized streams will be in the list
         //TODO: Make a model for this object, animations 
     }

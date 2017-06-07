@@ -87,6 +87,7 @@
     <Compile Include="Assets\Scripts\Stream.cs" />
     <Compile Include="Assets\Scripts\Switch.cs" />
     <Compile Include="Assets\Scripts\SwitchDoor.cs" />
+    <Compile Include="Assets\Scripts\startButton.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Standard Assets\CrossPlatformInput\CrossPlatformInputGuidelines.txt" />

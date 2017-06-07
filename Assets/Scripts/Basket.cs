@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 
 public class Basket : MonoBehaviour {
 
@@ -8,7 +8,7 @@ public class Basket : MonoBehaviour {
     BoxCollider2D coll;
     bool destroy;
     GameObject model;
-    public GameObject target;
+    public List<GameObject> target;
     SpriteRenderer rend;
 
 
@@ -17,8 +17,8 @@ public class Basket : MonoBehaviour {
 	
 	}
     //Capacity is the number of kittens the basket can hold
-    //Target is any object to be destroyed once the basket is full (ie a wall or something)
-    public void init(Snake sn, int capacity, Vector2 pos, GameObject target)
+    //Target is a list of objects to be destroyed once the basket is full (ie a wall or something)
+    public void init(Snake sn, int capacity, Vector2 pos, List<GameObject> target)
     {
         this.capacity = capacity;
         this.sn = sn;
@@ -27,10 +27,12 @@ public class Basket : MonoBehaviour {
         //Code for model and animations
        
         rend = this.gameObject.AddComponent<SpriteRenderer>();
-        Sprite[] spritez = Resources.LoadAll<Sprite>("Sprites/ADoor 1");
+        Sprite[] spritez = Resources.LoadAll<Sprite>("Sprites/basket");
         rend.sprite = spritez[0];
+        rend.sortingLayerName = "Foreground";
         this.tag = "Basket";
-        
+        transform.localScale = Vector3.Scale(transform.localScale, new Vector3(1.2f, 1.2f, 1));
+
         this.coll = gameObject.AddComponent<BoxCollider2D>();
         this.transform.position = pos;
     }
@@ -44,7 +46,7 @@ public class Basket : MonoBehaviour {
     void OnTriggerEnter2D(Collider2D coll)
     {
         
-        print(sn.SnakeList.Count + " heres count");
+       
         
         if(sn.SnakeList.Count > capacity && coll.gameObject.tag.Equals("Head"))
         {
@@ -58,11 +60,15 @@ public class Basket : MonoBehaviour {
                 sn.SnakeList.RemoveAt(size-i);
                 Destroy(tmp.gameObject);
             }
-            print("rend: " + rend.enabled);
-            Destroy(target);
-            rend.enabled = false;
-            rend.sprite = null;
-            print("rend: " + rend.enabled);
+            sn.lv.setEvent();
+            foreach( GameObject obj in target){
+                foreach(Transform child in obj.transform) //destroy all the children of the targets
+                {
+                    Destroy(child.gameObject);
+                }
+                Destroy(obj);
+            }     
+            
             
             Destroy(this.gameObject,0.2f);        
            

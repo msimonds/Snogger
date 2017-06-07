@@ -6,14 +6,15 @@ using System;
 public class Snake : MonoBehaviour {   
     
     private Vector2 direction;
+    Vector2 prevDir;
     public List<Node> SnakeList;
     public List<Lost> CatList;
     public int lvNum;
-    Level lv;
+    public Level lv;
  
     float time;
     public bool ate;
-    public float fr=0.4f;
+    public float fr=0.42f;
     Node head;
 
     // Use this for initialization
@@ -31,7 +32,7 @@ public class Snake : MonoBehaviour {
         Physics2D.gravity = Vector2.zero;
         direction = Vector2.up;
         ate = false;
-        Vector2 start = new Vector2(0, -4);
+        Vector2 start = new Vector2(0, 0);
         Vector2 k1 = new Vector2(5, 5);
         Vector2 k2 = new Vector2(-5, -5);
         GameObject headObject = new GameObject();
@@ -48,24 +49,19 @@ public class Snake : MonoBehaviour {
         // lv = this.gameObject.AddComponent<Level>();
         levelSelector();
         
-
-
-
         UnityStandardAssets._2D.Camera2DFollow cam= transform.GetComponentInChildren<UnityStandardAssets._2D.Camera2DFollow>();
         cam.target = head.transform;
         cam.enabled = true;
-
-       
-
+        
         InvokeRepeating("Move", fr, fr);
-
     }
 
     // Update is called once per frame
     void Update()
     {
-       // this.transform.position = SnakeList[0].transform.position;
+        // this.transform.position = SnakeList[0].transform.position;
         //check if button is pressed - update direction accordingly
+        prevDir = direction;
         if (Input.GetKeyDown(KeyCode.UpArrow))
         {
             direction = Vector2.up;
@@ -89,17 +85,17 @@ public class Snake : MonoBehaviour {
 
     void Move()
     {
+        //HERE IS WHERE I CAN ADD AN IF STATMENT TO KILL THE SNAKE IF HE RUNS INTO HIMSELF WITH 2,3, or 4 cats in line
         Vector2 v = head.gameObject.transform.position;
-        head.gameObject.transform.Translate(direction);
+
+        head.moveNode(direction,v);
 
         if (ate)
-        {
-            
+        {            
             GameObject og = new GameObject();
             Node n = og.AddComponent<Node>();
             n.init(v, false, this);
             SnakeList.Add(n);
-
             // Reset the flag
             ate = false;
         }
@@ -107,7 +103,8 @@ public class Snake : MonoBehaviour {
         if (SnakeList.Count > 1)
         {
             Node last = SnakeList[SnakeList.Count - 1];
-            last.transform.position = v;
+            last.moveNode(prevDir,v);
+            
             SnakeList.Insert(1, last);
             SnakeList.RemoveAt(SnakeList.Count - 1);
         }
@@ -127,16 +124,9 @@ public class Snake : MonoBehaviour {
         }
         lv.init(this);
         lv.setup();
-
-
     }
 
-    public List<Node> getSnake()
-    {
-        print("snake: snakelist below");
-        print(SnakeList);
-        return SnakeList;
-    }
+    
     public List<Lost> getCats()
     {
         return CatList;
@@ -149,5 +139,5 @@ public class Snake : MonoBehaviour {
 //-animations
 //-MENU!!!
 //-enemies
-//-surprise cards (dad comes to take away kids, 
+//-surprise cards (dad comes to take away kids, double the kittens, speed up, slow down)
 //something about trash cans

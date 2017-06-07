@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 
 public class Node : MonoBehaviour {
 
@@ -17,6 +17,10 @@ public class Node : MonoBehaviour {
     Sprite[] spritez;
     SpriteRenderer render;
     int spriteIndex;
+    int spriteStart;
+    int direction;
+    Dictionary<Vector2, int> spriteStartMap;
+    Dictionary<Vector2, int> spriteMap;
 
     public void init(Vector2 pos, bool head, Snake sn)
      {
@@ -24,15 +28,17 @@ public class Node : MonoBehaviour {
         this.head = head;
         this.snake = sn;
         this.stopwatch = 0;
-        this.spriteIndex = 0;   
-        
+        this.spriteIndex = 0;
+       
+        //need to make a map of sprites where each direction maps to a sprite
         GameObject model = new GameObject();
         model.transform.parent = transform;
         render = model.AddComponent<SpriteRenderer>();
+        render.sortingLayerName = "Foreground";
         spritez= Resources.LoadAll<Sprite>("Sprites/cats");
         render.sprite = spritez[0];
         model.transform.localScale = new Vector2(1.849568f, 2.248518f);
-
+        render.sortingLayerName = "Midground";
         this.body = gameObject.AddComponent<Rigidbody2D>();
         this.body.gravityScale = 0;
         this.body.isKinematic = true;
@@ -41,13 +47,47 @@ public class Node : MonoBehaviour {
         if (head)
         {
             coll.isTrigger = true;
+            spriteStart = 0;
+        }
+        else {
+            spriteStart = 44;
         }
         coll.enabled = false;
+        this.transform.position = pos;        
+        
+        spriteStartMap = new Dictionary<Vector2, int>();
+        spriteStartMap.Add(Vector2.up, 33);
+        spriteStartMap.Add(Vector2.down, 0);
+        spriteStartMap.Add(Vector2.left, 11);
+        spriteStartMap.Add(Vector2.right, 22);
 
-
-        this.transform.position = pos;
+        spriteMap = new Dictionary<Vector2, int>();
+        spriteMap.Add(Vector2.up, 77);
+        spriteMap.Add(Vector2.down, 44);
+        spriteMap.Add(Vector2.left, 55);
+        spriteMap.Add(Vector2.right,66 );
 
     }
+
+    public void moveNode(Vector2 prevDir, Vector2 pos)
+    {
+        if (head)
+        {
+            this.gameObject.transform.Translate(prevDir);
+            spriteStart = spriteStartMap[prevDir];//uses the spritestartmap for the Head cat
+            render.sprite = spritez[spriteStart];
+        }
+        else
+        {
+            transform.position = pos;
+            spriteStart = spriteMap[prevDir];
+            render.sprite = spritez[spriteStart];
+        }     
+
+    }
+
+    //this method will change the sprite based on the direction
+
     void OnTriggerEnter2D(Collider2D coll)
     {
         
@@ -58,11 +98,7 @@ public class Node : MonoBehaviour {
             snake.ate = true;
 
             //Remove from list of current LostCats
-            snake.CatList.Remove(coll.gameObject.GetComponent<Lost>());
-
-            // Remove the Food
-            Destroy(coll.gameObject);
-            
+            snake.CatList.Remove(coll.gameObject.GetComponent<Lost>());               
         }
         else if (coll.tag.Equals("Switch"))
         {
@@ -88,17 +124,14 @@ public class Node : MonoBehaviour {
         {
             coll.enabled = true;
         }
-       
       
        if (stopwatch >= 0.05f && stopwatch>=COOL)
         {
             spriteIndex =(spriteIndex+ 1) %3;
-            render.sprite = spritez[spriteIndex+11];
+            render.sprite = spritez[spriteIndex+spriteStart];
             stopwatch = 0;
         }
         stopwatch += Time.deltaTime;
-
-
     }
 
 

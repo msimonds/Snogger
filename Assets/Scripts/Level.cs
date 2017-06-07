@@ -18,6 +18,11 @@ public class Level : MonoBehaviour {
     {
 
     }
+
+    public virtual void setEvent()
+    {
+
+    }
 	
 	// Update is called once per frame
 	void Update () {
